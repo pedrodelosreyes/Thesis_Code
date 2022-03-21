@@ -107,9 +107,33 @@ cnetplot(circadian.go, cex_label_gene=0.4,
 dev.off()
 emapplot(circadian.go)
 
-###### Now with the simplify method, we can remove redundant terms ####
+## Reducing the redundancy of GO using rrvgo package
 
-simply.go <- simplify(enrich.go, cutoff=0.7, by="p.adjust", select_fun=min, measure="Rel")
+# get the similarity matrix between terms
+simMatrix <- calculateSimMatrix(go.result.table$`GO ID`,
+                                orgdb="org.At.tair.db",
+                                ont="BP",
+                                method="Rel")
 
-goplot(simply.go)
-goplot(enrich.go)
+# group terms based on similarity
+scores <- setNames(-log10(go.result.table$`q-value`), go.result.table$`GO ID`)
+reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.At.tair.db")
+
+# Plot similarity matrix as a heatmap
+heatmapPlot(simMatrix,
+            reducedTerms,
+            annotateParent=TRUE,
+            annotationLabel="parentTerm",
+            fontsize=6)
+
+# Plot GO terms as scattered points
+scatterPlot(simMatrix, reducedTerms)
+
+# Treemaps are space-filling visualization of hierarchical structures
+treemapPlot(reducedTerms)
+
+# wordcloud
+wordcloudPlot(reducedTerms, min.freq=1, colors="black")
