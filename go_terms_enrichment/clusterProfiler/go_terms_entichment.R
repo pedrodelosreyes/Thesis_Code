@@ -13,6 +13,7 @@
 
 library(clusterProfiler)
 library(org.At.tair.db)
+library(rrvgo)
 
 ## Auxiliary function to compute enrichments for GO table
 compute.enrichments <- function(gene.ratios, bg.ratios)
