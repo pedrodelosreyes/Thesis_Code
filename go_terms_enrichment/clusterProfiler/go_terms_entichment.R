@@ -1,4 +1,4 @@
-## Go term enrichment
+## Go terms enrichment
 
 ##Authors:
 # Fran Romero Campero
@@ -10,10 +10,14 @@
 # 
 # BiocManager::install("clusterProfiler")
 # BiocManager::install("org.At.tair.db")
+# BiocManager::install("rrvgo")
+# install.packages("viridis")
+
 
 library(clusterProfiler)
 library(org.At.tair.db)
 library(rrvgo)
+library(viridis)
 
 ## Auxiliary function to compute enrichments for GO table
 compute.enrichments <- function(gene.ratios, bg.ratios)
