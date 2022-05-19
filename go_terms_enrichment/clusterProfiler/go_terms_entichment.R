@@ -26,7 +26,7 @@ compute.enrichments <- function(gene.ratios, bg.ratios)
   return(enrichments.text)  
 }
 
-atha.universe <- unique(select(org.At.tair.db,columns = c("GO"),keys=keys(org.At.tair.db,keytype = "TAIR"))[["TAIR"]])
+atha.universe <- unique(AnnotationDbi::select(org.At.tair.db,columns = c("GO"),keys=keys(org.At.tair.db,keytype = "TAIR"))[["TAIR"]])
 length(atha.universe)
 
 target.genes <- read.table(file="../tablas/targets_and_upregulated_genes.txt")
@@ -72,7 +72,7 @@ dotplot(enrich.go, showCategory =20)
 go.result.table[73,]
 go.result.table[74,]
 
-## Genero na imagen tiff grande con alta resolución para que se vean bien
+## Genero una imagen tiff grande con alta resolución para que se vean bien
 ## todas las categorías
 
 tiff(file="barplo_goterms.tiff",
@@ -138,3 +138,35 @@ treemapPlot(reducedTerms)
 
 # wordcloud
 wordcloudPlot(reducedTerms, min.freq=1, colors="black")
+
+
+
+##############################################################
+######## Some plots with ggplot2 #############################
+##############################################################
+
+colnames(enrich.go.result)
+enrich.go.result[1:20,2:7]
+sorted.mat <- enrich.go.result[order(enrich.go.result$qvalue),]
+sorted.mat[1:20,2:7]
+
+sorted.mat$Description
+
+# lock in factor level order
+sorted.mat$Description <- factor(sorted.mat$Description, levels = sorted.mat$Description)
+
+
+png("ggplot_bar.png", width = 6, height = 4, units = "in",
+    res = 300)
+ggplot(sorted.mat[1:20,], aes(x=Count, y=Description, fill=qvalue)) + 
+  geom_col() + 
+  xlab("Count") + 
+  ylab("Description") +
+  theme_bw() +
+  theme(axis.line = element_line(colour = "black", size = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank()) +
+  scale_fill_viridis(option = "mako")
+dev.off()
